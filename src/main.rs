@@ -1,6 +1,6 @@
 use std::{
     collections::{BTreeMap, HashSet},
-    fs,
+    env, fs,
     io::{self, Write},
     path::PathBuf,
     time::Duration,
@@ -47,16 +47,22 @@ fn main() -> Result<()> {
 }
 
 fn load_dictionary() -> Result<Dictionary> {
-    let candidates = [
-        PathBuf::from("dictionary.txt"),
-        PathBuf::from("../dictionary.txt"),
-        PathBuf::from("../../dictionary.txt"),
-    ];
+    let mut candidates: Vec<PathBuf> = Vec::new();
+
+    for base in ["assets", "../assets", "../../assets"] {
+        candidates.push(PathBuf::from(base).join("dictionary.txt"));
+    }
+
+    if let Ok(mut exe_path) = env::current_exe() {
+        if exe_path.pop() {
+            candidates.push(exe_path.join("assets/dictionary.txt"));
+        }
+    }
 
     let contents = candidates
         .into_iter()
         .find_map(|path| fs::read_to_string(&path).ok())
-        .context("Unable to locate dictionary.txt. Place it alongside the binary or in the project root.")?;
+        .context("Unable to locate assets/dictionary.txt. Place it in the project assets folder or alongside the binary.")?;
 
     Ok(parse_dictionary(&contents))
 }
@@ -210,6 +216,14 @@ fn render_instructions(frame: &mut Frame<'_>, area: Rect, word_length: usize) {
 }
 
 fn render_board(frame: &mut Frame<'_>, area: Rect, app: &App) {
+    let board_sections = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Min(3), Constraint::Length(5)])
+        .split(area);
+
+    let board_area = board_sections[0];
+    let legend_area = board_sections[1];
+
     let mut rows = Vec::with_capacity(MAX_GUESSES);
 
     for row_idx in 0..MAX_GUESSES {
@@ -253,7 +267,20 @@ fn render_board(frame: &mut Frame<'_>, area: Rect, app: &App) {
         .column_spacing(1)
         .style(Style::default().fg(Color::White));
 
-    frame.render_widget(table, area);
+    let table_width = (app.word_length as u16)
+        .saturating_mul(4)
+        .saturating_add(app.word_length.saturating_sub(1) as u16)
+        .saturating_add(2);
+    let table_height = MAX_GUESSES as u16 + 2;
+    let render_area = centered_rect(
+        table_width.min(board_area.width),
+        table_height.min(board_area.height),
+        board_area,
+    );
+
+    frame.render_widget(table, render_area);
+
+    render_legend(frame, legend_area);
 }
 
 fn render_status(frame: &mut Frame<'_>, area: Rect, app: &App) {
@@ -269,6 +296,34 @@ fn render_status(frame: &mut Frame<'_>, area: Rect, app: &App) {
         .block(Block::default().title("Status").borders(Borders::ALL));
 
     frame.render_widget(status, area);
+}
+
+fn render_legend(frame: &mut Frame<'_>, area: Rect) {
+    if area.height == 0 {
+        return;
+    }
+
+    let lines = vec![
+        Line::from(vec![
+            Span::styled("   ", style_for_state(LetterState::Correct)),
+            Span::raw("  Correct position"),
+        ]),
+        Line::from(vec![
+            Span::styled("   ", style_for_state(LetterState::Present)),
+            Span::raw("  Present elsewhere"),
+        ]),
+        Line::from(vec![
+            Span::styled("   ", style_for_state(LetterState::Absent)),
+            Span::raw("  Not in the word"),
+        ]),
+    ];
+
+    let legend = Paragraph::new(lines)
+        .alignment(Alignment::Left)
+        .wrap(Wrap { trim: false })
+        .block(Block::default().title("Legend").borders(Borders::ALL));
+
+    frame.render_widget(legend, area);
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -449,4 +504,12 @@ fn style_for_state(state: LetterState) -> Style {
             .add_modifier(Modifier::BOLD),
         LetterState::Absent => Style::default().fg(Color::White).bg(Color::DarkGray),
     }
+}
+
+fn centered_rect(width: u16, height: u16, area: Rect) -> Rect {
+    let clamped_width = width.min(area.width);
+    let clamped_height = height.min(area.height);
+    let offset_x = area.x + (area.width.saturating_sub(clamped_width)) / 2;
+    let offset_y = area.y + (area.height.saturating_sub(clamped_height)) / 2;
+    Rect::new(offset_x, offset_y, clamped_width, clamped_height)
 }
