@@ -18,7 +18,7 @@ It also support multiple word length, when starting the game you are prompted wi
 1. Clone or download this repository.
    ```bash
    git clone https://github.com/luniiya/wordle-TUI.git
-   cd wordle-tui
+   cd wordle-TUI
    ```
 2. Build and install the binary locally (puts it in `~/.cargo/bin`):
    ```bash
