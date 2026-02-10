@@ -55,6 +55,6 @@ The game looks for `dictionary.txt` in these locations, in order:
 
 If none of those paths exist, the program exits with an error. Keep `dictionary.txt` with the binary or adjust your working directory accordingly.
 
-## Contributin
+## Contributing
 feel free to open a pull request if you want to add something / fix a bug, since this was just a quick codex experiment, there's definitely room for polish. 
-If the changes look good and everything works, i'll definetly merge them in
+If the changes look good and everything works, i'll definitely merge them in
