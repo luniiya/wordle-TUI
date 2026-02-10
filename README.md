@@ -1,14 +1,23 @@
 # Wordle TUI
 
 Wordle TUI is a terminal user interface game inspired by the original Wordle. It lets you pick a word length (3–8 letters), play with color-coded feedback, and runs entirely in the terminal using Crossterm and Ratatui.
+## Overview
+<img width="2560" height="1440" alt="yes" src="https://github.com/user-attachments/assets/2dcbec2f-a715-46eb-bac0-65c6b3813eaf" />
 
-## Prerequisites
+Wordle-TUI run from the terminal without an internet connection, it use a TUI made in rust and works well with pretty pywal coloring if any rice enjoyer are reading this.
+You can also replace the dictionary by anything making it compatible with any language.
+
+It also support multiple word length, when starting the game you are prompted with this :
+<img width="1378" height="503" alt="image" src="https://github.com/user-attachments/assets/cb9296a8-e672-4fdc-b6aa-0d2cd87ff6dc" />
+
+## Insallation
+### Prerequisites
 - Rust 1.76+ with `cargo` (install via <https://rustup.rs/>).
 
-## Install
+### Install
 1. Clone or download this repository.
    ```bash
-   git clone <your-fork-or-repo-url>
+   git clone https://github.com/luniiya/wordle-TUI.git
    cd wordle-tui
    ```
 2. Build and install the binary locally (puts it in `~/.cargo/bin`):
@@ -26,7 +35,7 @@ Wordle TUI is a terminal user interface game inspired by the original Wordle. It
    ```
    This makes the file available as `~/.cargo/bin/assets/dictionary.txt`, which the game will detect automatically.
 
-## Run
+### Run
 - From the project directory:
   ```bash
   cargo run --release
@@ -38,7 +47,7 @@ Wordle TUI is a terminal user interface game inspired by the original Wordle. It
 
 At startup you’ll be asked for the desired word length. Press Enter to accept the default (5) or enter any supported length shown in the prompt.
 
-## Dictionary placement
+### Dictionary placement
 The game looks for `dictionary.txt` in these locations, in order:
 - `assets/dictionary.txt` relative to the current directory
 - `../assets/dictionary.txt` or `../../assets/dictionary.txt` (useful for running from a nested path)
@@ -46,13 +55,6 @@ The game looks for `dictionary.txt` in these locations, in order:
 
 If none of those paths exist, the program exits with an error. Keep `dictionary.txt` with the binary or adjust your working directory accordingly.
 
-## Development
-- Format/check with:
-  ```bash
-  cargo fmt
-  cargo clippy --all-targets --all-features
-  ```
-- Run tests (if any are added):
-  ```bash
-  cargo test
-  ```
+## Contributin
+feel free to open a pull request if you want to add something / fix a bug, since this was just a quick codex experiment, there's definitely room for polish. 
+If the changes look good and everything works, i'll definetly merge them in
