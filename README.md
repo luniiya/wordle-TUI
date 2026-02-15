@@ -35,6 +35,22 @@ It also support multiple word length, when starting the game you are prompted wi
    ```
    This makes the file available as `~/.cargo/bin/assets/dictionary.txt`, which the game will detect automatically.
 
+### Add `cargo` bin to your `PATH`
+To run the installed binary directly, ensure `~/.cargo/bin` is on your `PATH`.
+- Bash/Zsh (adds it for new shells):
+  ```bash
+  echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc  # or ~/.zshrc
+  source ~/.bashrc  # reloads your shell config
+  ```
+- Fish shell:
+  ```bash
+  set -U fish_user_paths $HOME/.cargo/bin $fish_user_paths
+  ```
+For a single session without editing config files, run:
+```bash
+export PATH="$HOME/.cargo/bin:$PATH"
+```
+
 ### Run
 - From the project directory:
   ```bash
